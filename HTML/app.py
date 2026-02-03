@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, session, redirect, url_for
+from flask import Flask, request, jsonify, render_template, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from functools import wraps
@@ -12,12 +12,10 @@ app.config['SECRET_KEY'] = 'dev_secret_key_123'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///postfolify.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# File Upload Configuration
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'py', 'ino', 'pdf', 'txt'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Ensure the upload directory exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 db = SQLAlchemy(app)
@@ -52,10 +50,12 @@ class Post(db.Model):
     description = db.Column(db.Text, nullable=False)
     generated_text = db.Column(db.Text, nullable=False)
     
-    # New Columns for File Storage
-    screenshot_path = db.Column(db.String(200)) # Path to image
-    project_file_path = db.Column(db.String(200)) # Path to .py/.ino file
+    # NEW FIELDS: Tone and Platform
+    tone = db.Column(db.String(50))     # e.g., 'professional' or 'casual'
+    platform = db.Column(db.String(50)) # e.g., 'linkedin' or 'instagram'
     
+    screenshot_path = db.Column(db.String(200)) 
+    project_file_path = db.Column(db.String(200)) 
     is_public = db.Column(db.Boolean, default=True) 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
@@ -98,46 +98,49 @@ def login():
 def generate():
     user = User.query.get(session['user_id'])
     
-    # Ensure the description is retrieved from the form data
+    # Retrieve form data
     description = request.form.get('description')
+    tone = request.form.get('tone')
+    platform = request.form.get('platform')
     
     if not description:
-        return jsonify({"message": "Description is required to save a post."}), 400
+        return jsonify({"message": "Description is required."}), 400
 
+    # Handle unified file uploads
     screenshot = request.files.get('screenshot')
     project_file = request.files.get('project_file')
 
     s_path = None
     p_path = None
 
-    # Handle Screenshot Upload
     if screenshot and allowed_file(screenshot.filename):
         s_filename = secure_filename(f"user_{user.id}_img_{screenshot.filename}")
         screenshot.save(os.path.join(app.config['UPLOAD_FOLDER'], s_filename))
         s_path = s_filename
 
-    # Handle Project File Upload (.py, .ino)
     if project_file and allowed_file(project_file.filename):
         p_filename = secure_filename(f"user_{user.id}_code_{project_file.filename}")
         project_file.save(os.path.join(app.config['UPLOAD_FOLDER'], p_filename))
         p_path = p_filename
 
-    # Construct the contextual generated post
+    # Contextual generation logic
     generated_post = (
-        f"🚀 Engineering Milestone: {description}\n\n"
-        f"As a {user.profession}, I focus on builds like this. Check out the logic below! #Innovation"
+        f"🚀 {platform.capitalize()} Update ({tone.capitalize()}): {description}\n\n"
+        f"As a {user.profession}, this build represents a significant milestone. Logic attached! #Innovation"
     )
     
     try:
         new_post = Post(
             description=description, 
             generated_text=generated_post, 
+            tone=tone,
+            platform=platform,
             screenshot_path=s_path,
             project_file_path=p_path,
             user_id=user.id
         )
         db.session.add(new_post)
-        db.session.commit() # The data is officially saved to postfolify.db
+        db.session.commit() 
         
         return jsonify({
             "post": generated_post, 
@@ -146,7 +149,7 @@ def generate():
             "message": "Success"
         }), 200
     except Exception as e:
-        db.session.rollback() # Undo database changes if an error occurs
+        db.session.rollback()
         print(f"Database Error: {e}")
         return jsonify({"message": "Database write failed."}), 500
 
@@ -157,6 +160,8 @@ def get_feed():
         "author": p.author.name,
         "profession": p.author.profession,
         "content": p.generated_text,
+        "platform": p.platform,
+        "tone": p.tone,
         "image": p.screenshot_path,
         "file": p.project_file_path
     } for p in posts])
