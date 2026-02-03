@@ -4,7 +4,7 @@ from flask_bcrypt import Bcrypt
 from functools import wraps
 from werkzeug.utils import secure_filename
 import os
-
+import requests
 
 app = Flask(__name__)
 
