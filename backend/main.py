@@ -54,7 +54,7 @@ async def forge_post(
 
         # 3. GENERATE
         response = client.models.generate_content(
-            model="gemini-2.5-flash", 
+            model="gemini-2.5-flash-lite", 
             contents=content_payload
         )
         
