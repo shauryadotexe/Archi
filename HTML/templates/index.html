@@ -399,7 +399,7 @@
             btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin"></i> AI is forging...`;
             lucide.createIcons();
 
-            // 1. DATA FOR EXTERNAL AI ENDPOINT
+            // 1. DATA FOR EXTERNAL AI ENDPOINT (FastAPI)
             const forgeData = new FormData();
             forgeData.append('raw_text', desc);
             forgeData.append('platform', platform); 
@@ -408,7 +408,6 @@
             const persona = `${user.profession || 'Engineer'}. ${user.bio || ''}`;
             forgeData.append('user_persona', persona);
             
-            // Attach the first image found as media_file
             if (universalUpload.files.length > 0) {
                 for (let file of universalUpload.files) {
                     if (file.type.startsWith('image/')) {
@@ -419,7 +418,7 @@
             }
 
             try {
-                // STEP A: Fetch from AI Endpoint
+                // STEP A: Fetch from AI Endpoint (FastAPI via ngrok)
                 const forgeResponse = await fetch('https://inequitable-donovan-newsworthy.ngrok-free.dev/forge', {
                     method: 'POST',
                     body: forgeData 
@@ -428,7 +427,8 @@
                 const forgeResult = await forgeResponse.json();
 
                 if (forgeResponse.ok) {
-                    const aiText = forgeResult.post || forgeResult.generated_text;
+                    // --- FIX 1: Use 'output' (This matches your FastAPI return) ---
+                    const aiText = forgeResult.output || forgeResult.post || "Error: No text generated";
 
                     // Update UI Preview
                     const preview = document.getElementById('post-result');
@@ -437,15 +437,14 @@
                     document.getElementById('result-content').classList.remove('hidden');
                     document.getElementById('result-text').innerText = aiText;
 
-                    // STEP B: Save to LOCAL DATABASE
+                    // STEP B: Save to LOCAL DATABASE (Flask)
                     const localData = new FormData();
                     localData.append('description', desc);
                     localData.append('tone', tone);
                     localData.append('platform', platform);
-                    // We send the AI text back so it can be saved in the database
+                    // Send the AI text we just got to the database
                     localData.append('generated_text', aiText);
 
-                    // Re-append files for local storage in static/uploads
                     if (universalUpload.files.length > 0) {
                         for (let file of universalUpload.files) {
                             if (file.type.startsWith('image/')) {
@@ -462,14 +461,14 @@
                     });
 
                     if (localResponse.ok) {
-                        alert("🚀 Post Forged and successfully saved to your database!");
+                        console.log("Saved to database successfully");
                     } else {
                         console.error("Local Save Failed");
-                        alert("AI generated the post, but local saving failed. Check terminal.");
                     }
 
                 } else {
-                    alert(`Forge Error: ${forgeResult.message || "AI failed to process."}`);
+                    // FastAPI sends errors in 'detail'
+                    alert(`Forge Error: ${forgeResult.detail || forgeResult.message || "Unknown Error"}`);
                 }
             } catch (error) {
                 console.error("Connection Error:", error);

@@ -104,6 +104,13 @@ def generate():
     tone = request.form.get('tone')
     platform = request.form.get('platform')
     
+    # --- FIX 2: Retrieve the AI text sent from Frontend ---
+    # If frontend didn't send it, fallback to a placeholder (safety net)
+    generated_post = request.form.get('generated_text')
+    
+    if not generated_post:
+         generated_post = f"🚀 {platform.capitalize()} Update: {description} #Innovation"
+
     if not description:
         return jsonify({"message": "Description is required."}), 400
 
@@ -124,16 +131,10 @@ def generate():
         project_file.save(os.path.join(app.config['UPLOAD_FOLDER'], p_filename))
         p_path = p_filename
 
-    # Contextual generation logic
-    generated_post = (
-        f"🚀 {platform.capitalize()} Update ({tone.capitalize()}): {description}\n\n"
-        f"As a {user.profession}, this build represents a significant milestone. Logic attached! #Innovation"
-    )
-    
     try:
         new_post = Post(
             description=description, 
-            generated_text=generated_post, 
+            generated_text=generated_post,  # Now uses the real AI text
             tone=tone,
             platform=platform,
             screenshot_path=s_path,

@@ -30,7 +30,7 @@ async def forge_post(
     try:
         # 1. PROMPT 
         if platform.lower() == "linkedin":
-            format_rules = "Structure: Hook -> Story -> Call to Action. Professional formatting."
+            format_rules = "Structure: The Hook (Line 1): Grab attention immediately with a question, surprising fact, or a bold statement to stop the scroll. The Problem/Context: Briefly explain the issue, experience, or topic. The Solution/Value (Body): Use 3-5 bullet points to make the content scannable. The Takeaway: Share a single, clear, actionable insight. Call to Action (CTA): End with a question or prompt to encourage comments (e.g., What are your thoughts?). Hashtags: Include 3-5 specific, relevant hashtags at the bottom. Use no markups like Bold and also give outputs such that I can directly copy and paste whole with no here's your post"
         elif platform.lower() == "instagram":
             format_rules = "Structure: Visual caption. Emojis. Block of hashtags at the bottom."
         else:
