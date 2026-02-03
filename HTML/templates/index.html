@@ -107,9 +107,22 @@
                         <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-1 ml-1">Birth Date</label>
                         <input type="date" name="dob" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt" required>
                     </div>
-                    <div>
+                    <<div class="col-span-2">
                         <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-1 ml-1">Expertise</label>
-                        <input type="text" name="profession" placeholder="e.g. IoT Engineer" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt" required>
+                        <select name="profession_select" id="signup-profession-select" onchange="toggleOtherProfession('signup')" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt appearance-none" required>
+                            <option value="" disabled selected>Select your role...</option>
+                            <option value="Student">Student</option>
+                            <option value="Software Engineer">Software Engineer</option>
+                            <option value="Sales Representative">Sales Representative</option>
+                            <option value="Nurse">Nurse</option>
+                            <option value="Project Manager">Project Manager</option>
+                            <option value="Data Analyst">Data Analyst</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>  
+                    <div id="signup-other-container" class="col-span-2 hidden">
+                        <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-1 ml-1">Specify Expertise</label>
+                        <input type="text" id="signup-profession-other" placeholder="e.g. IoT Hardware Specialist" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt">
                     </div>
                     <div class="col-span-2">
                         <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-1 ml-1">Short Bio</label>
@@ -177,9 +190,22 @@
                         <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-2 px-1">Full Identity</label>
                         <input type="text" id="acc-name" name="name" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt">
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-2 px-1">Professional Title</label>
-                        <input type="text" id="acc-profession" name="profession" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt">
+                    <div class="col-span-2">
+                        <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-1 ml-1">Expertise</label>
+                        <select name="profession_select" id="signup-profession-select" onchange="toggleOtherProfession('signup')" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt appearance-none" required>
+                            <option value="" disabled selected>Select your role...</option>
+                            <option value="Student">Student</option>
+                            <option value="Software Engineer">Software Engineer</option>
+                            <option value="Sales Representative">Sales Representative</option>
+                            <option value="Nurse">Nurse</option>
+                            <option value="Project Manager">Project Manager</option>
+                            <option value="Data Analyst">Data Analyst</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div id="signup-other-container" class="col-span-2 hidden">
+                        <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-1 ml-1">Specify Expertise</label>
+                        <input type="text" id="signup-profession-other" placeholder="e.g. IoT Hardware Specialist" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt">
                     </div>
                     <div>
                         <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-2 px-1">Project Philosophy / Bio</label>
@@ -207,13 +233,31 @@
                         </div>
 
                         <div class="flex flex-col gap-2">
-                            <label class="text-[10px] font-black text-navy uppercase tracking-widest px-1">Upload Screenshot</label>
-                            <input type="file" id="screenshot-upload" accept="image/*" class="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky/10 file:text-navy hover:file:bg-sky/20 cursor-pointer">
+                            <label class="text-[10px] font-black text-navy uppercase tracking-widest px-1">Attach Project Assets (Images or Code)</label>
+                            <div class="group border-2 border-dashed border-slate-200 rounded-3xl p-8 text-center hover:border-sky hover:bg-sky/5 transition-all cursor-pointer relative">
+                                <input type="file" id="universal-upload" multiple accept="image/*,.py,.ino,.pdf,.txt" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                <i data-lucide="upload-cloud" size="32" class="mx-auto text-sky mb-2 group-hover:-translate-y-1 transition-transform"></i>
+                                <p class="font-bold text-slate-blue text-sm">Click or Drag Files</p>
+                                <p id="file-count" class="text-[10px] text-slate-400 mt-1 italic">No files selected</p>
+                            </div>
                         </div>
 
-                        <div class="flex flex-col gap-2">
-                            <label class="text-[10px] font-black text-navy uppercase tracking-widest px-1">Attach Logic (.py, .ino, .pdf)</label>
-                            <input type="file" id="file-upload" accept=".py,.ino,.pdf,.txt" class="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-navy/10 file:text-navy hover:file:bg-navy/20 cursor-pointer">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="flex flex-col gap-2">
+                                <label class="text-[10px] font-black text-navy uppercase tracking-widest px-1">Target Platform</label>
+                                <select id="post-platform" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt">
+                                    <option value="linkedin">LinkedIn</option>
+                                    <option value="instagram">Instagram</option>
+                                </select>
+                            </div>
+
+                            <div class="flex flex-col gap-2">
+                                <label class="text-[10px] font-black text-navy uppercase tracking-widest px-1">Content Tone</label>
+                                <select id="post-tone" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt">
+                                    <option value="professional">Professional</option>
+                                    <option value="casual">Casual</option>
+                                </select>
+                            </div>
                         </div>
 
                         <button onclick="generatePost()" id="generate-btn" class="w-full bg-navy text-white py-5 rounded-3xl font-bold text-xl shadow-xl hover:bg-cobalt transition-all active:scale-95 flex items-center justify-center gap-3">
@@ -248,10 +292,11 @@
             </div>
         </section>
     </div>
-
+    
     <script>
         let user = { name: '', profession: '', bio: '' };
 
+        // --- Helper: Navigation ---
         function showPage(pageId) {
             document.querySelectorAll('section').forEach(page => {
                 page.classList.add('hidden');
@@ -266,7 +311,6 @@
             
             if (pageId === 'account') {
                 document.getElementById('acc-name').value = user.name;
-                document.getElementById('acc-profession').value = user.profession;
                 document.getElementById('acc-bio').value = user.bio;
             }
 
@@ -278,10 +322,30 @@
             window.scrollTo(0,0);
         }
 
+        // --- Helper: Toggle 'Other' Profession Field ---
+        function toggleOtherProfession(prefix) {
+            const select = document.getElementById(`${prefix}-profession-select`);
+            const container = document.getElementById(`${prefix}-other-container`);
+            if (select.value === 'Other') {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        // --- Signup Logic: Fixed Role Saving ---
         document.getElementById('signup-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const formData = new FormData(this);
             const data = Object.fromEntries(formData.entries());
+
+            // Ensure 'profession' is captured correctly from dropdown or 'Other' text
+            if (data.profession_select === 'Other') {
+                data.profession = document.getElementById('signup-profession-other').value;
+            } else {
+                data.profession = data.profession_select;
+            }
+            delete data.profession_select; 
 
             const response = await fetch('/api/signup', {
                 method: 'POST',
@@ -290,7 +354,7 @@
             });
 
             if (response.ok) {
-                user = data;
+                user = data; // Set global user object
                 showPage('home');
             } else {
                 const err = await response.json();
@@ -298,6 +362,7 @@
             }
         });
 
+        // --- Login Logic ---
         async function handleLogin() {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
@@ -317,10 +382,12 @@
             }
         }
 
-        // --- UPDATED: External AI Post Generation ---
+        // --- UPDATED: External AI Forge & Local Database Save ---
         async function generatePost() {
             const desc = document.getElementById('project-desc').value;
-            const screenshotInput = document.getElementById('screenshot-upload');
+            const platform = document.getElementById('post-platform').value;
+            const tone = document.getElementById('post-tone').value;
+            const universalUpload = document.getElementById('universal-upload');
             const btn = document.getElementById('generate-btn');
 
             if (!desc) {
@@ -328,52 +395,85 @@
                 return;
             }
 
-            // Visual feedback: Loading state
             btn.disabled = true;
             btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin"></i> AI is forging...`;
             lucide.createIcons();
 
-            // 1. Prepare data for the External Forge API
-            const formData = new FormData();
-            formData.append('raw_text', desc);
-            formData.append('platform', 'linkedin'); 
-            formData.append('tone', 'professional'); 
+            // 1. DATA FOR EXTERNAL AI ENDPOINT
+            const forgeData = new FormData();
+            forgeData.append('raw_text', desc);
+            forgeData.append('platform', platform); 
+            forgeData.append('tone', tone); 
             
-            // Constructing persona from user data
             const persona = `${user.profession || 'Engineer'}. ${user.bio || ''}`;
-            formData.append('user_persona', persona);
+            forgeData.append('user_persona', persona);
             
-            if (screenshotInput.files[0]) {
-                formData.append('media_file', screenshotInput.files[0]);
+            // Attach the first image found as media_file
+            if (universalUpload.files.length > 0) {
+                for (let file of universalUpload.files) {
+                    if (file.type.startsWith('image/')) {
+                        forgeData.append('media_file', file);
+                        break; 
+                    }
+                }
             }
 
             try {
-                // 2. Sending to the ngrok endpoint
-                const response = await fetch('https://inequitable-donovan-newsworthy.ngrok-free.dev/forge', {
+                // STEP A: Fetch from AI Endpoint
+                const forgeResponse = await fetch('https://inequitable-donovan-newsworthy.ngrok-free.dev/forge', {
                     method: 'POST',
-                    body: formData 
-                    // Browser handles Content-Type: multipart/form-data automatically
+                    body: forgeData 
                 });
 
-                const result = await response.json();
+                const forgeResult = await forgeResponse.json();
 
-                if (response.ok) {
-                    // Success Logic
+                if (forgeResponse.ok) {
+                    const aiText = forgeResult.post || forgeResult.generated_text;
+
+                    // Update UI Preview
                     const preview = document.getElementById('post-result');
                     preview.classList.remove('opacity-30', 'grayscale');
                     document.getElementById('result-placeholder').classList.add('hidden');
                     document.getElementById('result-content').classList.remove('hidden');
-                    
-                    // Display the text returned by the AI
-                    document.getElementById('result-text').innerText = result.post || result.generated_text;
+                    document.getElementById('result-text').innerText = aiText;
 
-                    alert("🚀 Post Forged! Your AI-generated content is ready.");
+                    // STEP B: Save to LOCAL DATABASE
+                    const localData = new FormData();
+                    localData.append('description', desc);
+                    localData.append('tone', tone);
+                    localData.append('platform', platform);
+                    // We send the AI text back so it can be saved in the database
+                    localData.append('generated_text', aiText);
+
+                    // Re-append files for local storage in static/uploads
+                    if (universalUpload.files.length > 0) {
+                        for (let file of universalUpload.files) {
+                            if (file.type.startsWith('image/')) {
+                                localData.append('screenshot', file);
+                            } else {
+                                localData.append('project_file', file);
+                            }
+                        }
+                    }
+
+                    const localResponse = await fetch('/api/generate', {
+                        method: 'POST',
+                        body: localData
+                    });
+
+                    if (localResponse.ok) {
+                        alert("🚀 Post Forged and successfully saved to your database!");
+                    } else {
+                        console.error("Local Save Failed");
+                        alert("AI generated the post, but local saving failed. Check terminal.");
+                    }
+
                 } else {
-                    alert(`Forge Error: ${result.message || "The AI endpoint failed to process your request."}`);
+                    alert(`Forge Error: ${forgeResult.message || "AI failed to process."}`);
                 }
             } catch (error) {
                 console.error("Connection Error:", error);
-                alert("Failed to connect to the Forge AI. Make sure the ngrok tunnel is active.");
+                alert("Connection Error. Ensure ngrok is active.");
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = `Generate Post <i data-lucide="sparkles" size="22"></i>`;
@@ -381,6 +481,7 @@
             }
         }
 
+        // --- UI Helpers ---
         function copyToClipboard() {
             const text = document.getElementById('result-text').innerText;
             navigator.clipboard.writeText(text);
@@ -391,6 +492,14 @@
             user = { name: '', profession: '', bio: '' };
             showPage('login');
         }
+
+        document.addEventListener('change', (e) => {
+            if (e.target.id === 'universal-upload') {
+                const count = e.target.files.length;
+                const countEl = document.getElementById('file-count');
+                if (countEl) countEl.innerText = count > 0 ? `${count} file(s) attached` : 'No files selected';
+            }
+        });
 
         lucide.createIcons();
     </script>
