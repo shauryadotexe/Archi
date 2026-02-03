@@ -1,0 +1,13 @@
+# Secrets
+.env
+api_keys.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+
+# Mac/OS stuff
+.DS_Store
