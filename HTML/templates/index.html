@@ -260,9 +260,14 @@
                             </div>
                         </div>
 
-                        <button onclick="generatePost()" id="generate-btn" class="w-full bg-navy text-white py-5 rounded-3xl font-bold text-xl shadow-xl hover:bg-cobalt transition-all active:scale-95 flex items-center justify-center gap-3">
-                            Generate Post <i data-lucide="sparkles" size="22"></i>
-                        </button>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <button onclick="generatePost()" id="generate-btn" class="w-full bg-navy text-white py-5 rounded-3xl font-bold text-xl shadow-xl hover:bg-cobalt transition-all active:scale-95 flex items-center justify-center gap-3">
+                                Generate Post <i data-lucide="sparkles" size="22"></i>
+                            </button>
+                            <button onclick="clearGenerateFields()" id="clear-btn" class="w-full bg-white text-navy py-5 rounded-3xl font-bold text-xl shadow-xl hover:bg-slate-100 transition-all active:scale-95 flex items-center justify-center gap-3 border border-slate-200">
+                                Clear Fields <i data-lucide="eraser" size="22"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -478,6 +483,23 @@
                 btn.innerHTML = `Generate Post <i data-lucide="sparkles" size="22"></i>`;
                 lucide.createIcons();
             }
+        }
+
+        function clearGenerateFields() {
+            document.getElementById('project-desc').value = '';
+            document.getElementById('post-platform').value = 'linkedin';
+            document.getElementById('post-tone').value = 'professional';
+
+            const upload = document.getElementById('universal-upload');
+            upload.value = '';
+            const countEl = document.getElementById('file-count');
+            if (countEl) countEl.innerText = 'No files selected';
+
+            const preview = document.getElementById('post-result');
+            preview.classList.add('opacity-30', 'grayscale');
+            document.getElementById('result-placeholder').classList.remove('hidden');
+            document.getElementById('result-content').classList.add('hidden');
+            document.getElementById('result-text').innerText = '';
         }
 
         // --- UI Helpers ---
