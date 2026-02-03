@@ -1,0 +1,21 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Virtual Environment
+venv/
+ENV/
+
+# Local Database (Your data stays on your machine)
+postfolify.db
+
+# User Uploaded Files (Screenshots and .ino/.py files)
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Environment variables (If you add a .env later)
+.env

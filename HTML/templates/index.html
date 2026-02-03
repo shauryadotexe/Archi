@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postfolify - Idea to Post</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --navy: #000080;
+            --cobalt: #0047AB;
+            --sky: #82C8E5;
+            --slate-blue: #6D8196;
+        }
+        .bg-navy { background-color: var(--navy); }
+        .bg-cobalt { background-color: var(--cobalt); }
+        .text-navy { color: var(--navy); }
+        .text-sky { color: var(--sky); }
+        .text-slate-blue { color: var(--slate-blue); }
+        
+        .hidden { display: none; }
+
+        @keyframes springIn {
+            0% { opacity: 0; transform: scale(0.96) translateY(20px); }
+            70% { transform: scale(1.01) translateY(-2px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .animate-spring {
+            animation: springIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: var(--cobalt); border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-gray-900 h-screen flex flex-col overflow-hidden">
+
+    <nav id="navbar" class="fixed top-0 w-full glass-card z-50 px-8 py-3 flex justify-between items-center shadow-sm hidden">
+        <div class="flex items-center gap-3 cursor-pointer group" onclick="showPage('home')">
+            <div class="bg-navy p-2 rounded-xl text-sky group-hover:bg-cobalt transition-all">
+                <i data-lucide="share-2" size="20"></i>
+            </div>
+            <span class="text-xl font-bold tracking-tight text-navy">Postfolify</span>
+        </div>
+        <div class="flex items-center gap-6">
+            <button onclick="showPage('account')" class="flex items-center gap-2 text-navy hover:text-cobalt transition-all font-semibold text-sm">
+                <i data-lucide="settings" size="18"></i> Account
+            </button>
+            <button onclick="logout()" class="flex items-center gap-2 text-slate-blue hover:text-red-600 transition-all font-semibold text-sm">
+                <i data-lucide="log-out" size="18"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <div id="app-content" class="flex-grow pt-20 overflow-y-auto">
+        
+        <section id="login-page" class="h-full flex items-center justify-center p-4 animate-spring">
+            <div class="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl p-12 border border-slate-100 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-sky/10 rounded-full -mr-16 -mt-16"></div>
+                <div class="text-center mb-10 relative">
+                    <h1 class="text-4xl font-black text-navy mb-2">Postfolify</h1>
+                    <p class="text-slate-blue font-medium leading-relaxed">Bridge the gap between engineering <br> builds and social impact.</p>
+                </div>
+                <div class="space-y-4">
+                    <input type="email" id="login-email" placeholder="Email Address" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt">
+                    <input type="password" id="login-password" placeholder="Password" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt">
+                    <button onclick="handleLogin()" class="w-full bg-navy hover:bg-cobalt text-white font-bold py-4 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-all active:scale-95">
+                        Start Creating <i data-lucide="chevron-right" size="20"></i>
+                    </button>
+                </div>
+                <p class="mt-8 text-center text-sm text-slate-blue">New user? <button onclick="showPage('signup')" class="text-cobalt font-bold hover:underline">Register Profile</button></p>
+            </div>
+        </section>
+
+        <section id="signup-page" class="h-full flex items-center justify-center p-4 hidden animate-spring">
+            <div class="max-w-lg w-full bg-white rounded-[2.5rem] shadow-2xl p-10 border border-slate-100">
+                <h1 class="text-3xl font-black text-navy mb-2">Build Your Identity</h1>
+                <p class="text-slate-blue mb-8">AI uses this context to write your posts.</p>
+                <form id="signup-form" class="grid grid-cols-2 gap-5">
+                    <div class="col-span-2">
+                        <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-1 ml-1">Full Name</label>
+                        <input type="text" name="name" placeholder="e.g. Alex Chen" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt" required>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-1 ml-1">Email</label>
+                        <input type="email" name="email" placeholder="engineering@work.com" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt" required>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-1 ml-1">Password</label>
+                        <input type="password" name="password" placeholder="••••••••" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt" required>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-1 ml-1">Birth Date</label>
+                        <input type="date" name="dob" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt" required>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-1 ml-1">Expertise</label>
+                        <input type="text" name="profession" placeholder="e.g. IoT Engineer" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt" required>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-1 ml-1">Short Bio</label>
+                        <textarea name="bio" placeholder="Describe your main project focus (e.g. Telemedicine solutions for rural areas)" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt h-24 resize-none"></textarea>
+                    </div>
+                    <button type="submit" class="col-span-2 w-full bg-cobalt hover:bg-navy text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-95">Complete Setup</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="home-page" class="max-w-7xl mx-auto py-8 px-6 hidden animate-spring">
+            <div class="bento-grid">
+                <div class="col-span-12 lg:col-span-8 bg-white p-12 rounded-[3rem] shadow-xl border border-slate-100 flex flex-col justify-between relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-sky/5 rounded-full -mr-32 -mt-32 group-hover:scale-110 transition-transform duration-700"></div>
+                    <div>
+                        <h1 class="text-5xl font-black text-navy mb-4 leading-tight">Welcome back, <br><span id="display-name" class="text-cobalt italic">Engineer</span>.</h1>
+                        <p class="text-slate-blue text-xl mb-10 leading-relaxed max-w-lg">Ready to transform your technical work into high-impact LinkedIn content?</p>
+                    </div>
+                    <button onclick="showPage('generate')" class="bg-navy text-white px-10 py-5 rounded-3xl font-bold text-xl shadow-2xl hover:bg-cobalt transition-all flex items-center gap-3 w-fit active:scale-95">
+                        <i data-lucide="plus" size="24"></i> Create New Post
+                    </button>
+                </div>
+                <div class="col-span-12 lg:col-span-4 grid grid-cols-1 gap-6">
+                    <div class="bg-cobalt text-white p-8 rounded-[2.5rem] shadow-xl">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="bg-white/20 p-2 rounded-lg"><i data-lucide="zap" size="20"></i></div>
+                            <span class="text-[10px] font-bold uppercase tracking-tighter opacity-70">Weekly Tip</span>
+                        </div>
+                        <p class="text-lg font-bold leading-snug">"Use emojis to break up technical jargon in your post hook."</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-[2.5rem] shadow-lg border border-slate-100">
+                        <h3 class="text-navy font-bold flex items-center gap-2 mb-2">
+                            <i data-lucide="folder-code" size="18" class="text-sky"></i> Ready Files
+                        </h3>
+                        <p class="text-slate-blue text-sm">Upload your latest <b>.ino</b> or <b>.py</b> snippets for analysis.</p>
+                    </div>
+                </div>
+                <div class="col-span-12 md:col-span-4 bg-sky/10 p-8 rounded-[2.5rem] border border-sky/20">
+                    <i data-lucide="cpu" class="text-navy mb-4" size="32"></i>
+                    <h4 class="font-bold text-navy text-lg">Hardware Logic</h4>
+                    <p class="text-navy/60 text-sm mt-2 leading-relaxed">AI analyzes your sensor logic for professional summary generation.</p>
+                </div>
+                <div class="col-span-12 md:col-span-4 bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                    <i data-lucide="award" class="text-cobalt mb-4" size="32"></i>
+                    <h4 class="font-bold text-navy text-lg">Skill Branding</h4>
+                    <p class="text-slate-blue text-sm mt-2 leading-relaxed">Automatically highlights your expertise in specific engineering domains.</p>
+                </div>
+                <div class="col-span-12 md:col-span-4 bg-navy p-8 rounded-[2.5rem] shadow-xl text-white">
+                    <i data-lucide="trending-up" class="text-sky mb-4" size="32"></i>
+                    <h4 class="font-bold text-lg">Growth Focus</h4>
+                    <p class="text-slate-100/60 text-sm mt-2 leading-relaxed">Formatting optimized for the current LinkedIn algorithm.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="account-page" class="h-full flex items-center justify-center p-4 hidden animate-spring">
+            <div class="max-w-lg w-full bg-white rounded-[2.5rem] shadow-2xl p-10 border border-slate-100">
+                <div class="flex items-center gap-2 mb-8 cursor-pointer text-slate-blue hover:text-navy transition-colors font-bold" onclick="showPage('home')">
+                    <i data-lucide="arrow-left" size="18"></i> Back to Dashboard
+                </div>
+                <h1 class="text-3xl font-black text-navy mb-2">Profile Settings</h1>
+                <p class="text-slate-blue mb-8 text-sm">Update the details AI uses for post generation.</p>
+                <form id="account-form" class="space-y-6">
+                    <div>
+                        <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-2 px-1">Full Identity</label>
+                        <input type="text" id="acc-name" name="name" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-2 px-1">Professional Title</label>
+                        <input type="text" id="acc-profession" name="profession" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-2 px-1">Project Philosophy / Bio</label>
+                        <textarea id="acc-bio" name="bio" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-cobalt h-32 resize-none"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-navy text-white font-bold py-5 rounded-2xl shadow-xl hover:bg-cobalt transition-all">Update Settings</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="generate-page" class="max-w-7xl mx-auto py-6 px-6 hidden animate-spring">
+            <div class="flex items-center gap-2 text-slate-blue hover:text-navy mb-6 cursor-pointer font-bold" onclick="showPage('home')">
+                <i data-lucide="chevron-left" size="18"></i> Dashboard
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div class="lg:col-span-7 bg-white rounded-[3rem] shadow-xl p-10 border border-slate-100">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="bg-sky/20 p-2 rounded-lg text-navy"><i data-lucide="edit-3" size="20"></i></div>
+                        <h2 class="text-2xl font-black text-navy">Project Input</h2>
+                    </div>
+                    <div class="space-y-8">
+                        <div>
+                            <label class="block text-[10px] font-black text-navy uppercase tracking-widest mb-3 px-1">What did you achieve?</label>
+                            <textarea id="project-desc" class="w-full h-56 p-6 bg-slate-50 border border-slate-200 rounded-3xl outline-none focus:ring-2 focus:ring-cobalt resize-none" placeholder="I built a self-balancing drone using ESP32..."></textarea>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[10px] font-black text-navy uppercase tracking-widest px-1">Upload Screenshot</label>
+                            <input type="file" id="screenshot-upload" accept="image/*" class="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky/10 file:text-navy hover:file:bg-sky/20 cursor-pointer">
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[10px] font-black text-navy uppercase tracking-widest px-1">Attach Logic (.py, .ino, .pdf)</label>
+                            <input type="file" id="file-upload" accept=".py,.ino,.pdf,.txt" class="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-navy/10 file:text-navy hover:file:bg-navy/20 cursor-pointer">
+                        </div>
+
+                        <button onclick="generatePost()" id="generate-btn" class="w-full bg-navy text-white py-5 rounded-3xl font-bold text-xl shadow-xl hover:bg-cobalt transition-all active:scale-95 flex items-center justify-center gap-3">
+                            Generate Post <i data-lucide="sparkles" size="22"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="post-result" class="lg:col-span-5 bg-[#030712] rounded-[3rem] shadow-2xl p-10 text-white min-h-[500px] flex flex-col opacity-30 grayscale transition-all duration-700">
+                    <div class="flex items-center gap-4 mb-8 border-b border-white/10 pb-6">
+                        <div class="bg-sky/20 p-3 rounded-2xl text-sky"><i data-lucide="linkedin" size="24"></i></div>
+                        <div>
+                            <span class="block font-bold text-sm tracking-widest uppercase text-sky/80">LinkedIn Live Preview</span>
+                            <span class="text-[10px] text-white/40 italic">Smart Contextual Formatting</span>
+                        </div>
+                    </div>
+                    <div id="result-placeholder" class="flex-grow flex items-center justify-center text-center px-10">
+                        <p class="text-white/20 italic text-lg leading-relaxed">Add project context to see the <br> AI magic happen.</p>
+                    </div>
+                    <div id="result-content" class="hidden">
+                        <p id="result-text" class="text-xl leading-relaxed text-slate-100 whitespace-pre-wrap font-serif italic selection:bg-sky/30"></p>
+                        <div class="mt-10 flex gap-4">
+                            <button onclick="copyToClipboard()" class="flex-1 bg-white/10 hover:bg-white/20 text-sky py-4 rounded-2xl flex items-center justify-center gap-2 text-sm font-bold transition-all border border-white/5">
+                                <i data-lucide="copy" size="18"></i> Copy Text
+                            </button>
+                            <button class="bg-sky text-navy px-6 rounded-2xl flex items-center justify-center hover:bg-white transition-all">
+                                <i data-lucide="external-link" size="18"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        let user = { name: '', profession: '', bio: '' };
+
+        function showPage(pageId) {
+            document.querySelectorAll('section').forEach(page => {
+                page.classList.add('hidden');
+                page.classList.remove('animate-spring');
+            });
+            document.getElementById('navbar').classList.add('hidden');
+
+            const targetPage = document.getElementById(`${pageId}-page`);
+            targetPage.classList.remove('hidden');
+            void targetPage.offsetWidth; 
+            targetPage.classList.add('animate-spring');
+            
+            if (pageId === 'account') {
+                document.getElementById('acc-name').value = user.name;
+                document.getElementById('acc-profession').value = user.profession;
+                document.getElementById('acc-bio').value = user.bio;
+            }
+
+            if (['home', 'generate', 'account'].includes(pageId)) {
+                document.getElementById('navbar').classList.remove('hidden');
+                document.getElementById('display-name').innerText = user.name || 'Engineer';
+            }
+            lucide.createIcons();
+            window.scrollTo(0,0);
+        }
+
+        document.getElementById('signup-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+
+            const response = await fetch('/api/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                user = data;
+                showPage('home');
+            } else {
+                const err = await response.json();
+                alert("Signup failed: " + err.message);
+            }
+        });
+
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (response.ok) {
+                user = await response.json();
+                showPage('home');
+            } else {
+                alert("Account not found. Redirecting to setup.");
+                showPage('signup');
+            }
+        }
+
+        // --- UPDATED: External AI Post Generation ---
+        async function generatePost() {
+            const desc = document.getElementById('project-desc').value;
+            const screenshotInput = document.getElementById('screenshot-upload');
+            const btn = document.getElementById('generate-btn');
+
+            if (!desc) {
+                alert("Please add a description first!");
+                return;
+            }
+
+            // Visual feedback: Loading state
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin"></i> AI is forging...`;
+            lucide.createIcons();
+
+            // 1. Prepare data for the External Forge API
+            const formData = new FormData();
+            formData.append('raw_text', desc);
+            formData.append('platform', 'linkedin'); 
+            formData.append('tone', 'professional'); 
+            
+            // Constructing persona from user data
+            const persona = `${user.profession || 'Engineer'}. ${user.bio || ''}`;
+            formData.append('user_persona', persona);
+            
+            if (screenshotInput.files[0]) {
+                formData.append('media_file', screenshotInput.files[0]);
+            }
+
+            try {
+                // 2. Sending to the ngrok endpoint
+                const response = await fetch('https://inequitable-donovan-newsworthy.ngrok-free.dev/forge', {
+                    method: 'POST',
+                    body: formData 
+                    // Browser handles Content-Type: multipart/form-data automatically
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Success Logic
+                    const preview = document.getElementById('post-result');
+                    preview.classList.remove('opacity-30', 'grayscale');
+                    document.getElementById('result-placeholder').classList.add('hidden');
+                    document.getElementById('result-content').classList.remove('hidden');
+                    
+                    // Display the text returned by the AI
+                    document.getElementById('result-text').innerText = result.post || result.generated_text;
+
+                    alert("🚀 Post Forged! Your AI-generated content is ready.");
+                } else {
+                    alert(`Forge Error: ${result.message || "The AI endpoint failed to process your request."}`);
+                }
+            } catch (error) {
+                console.error("Connection Error:", error);
+                alert("Failed to connect to the Forge AI. Make sure the ngrok tunnel is active.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `Generate Post <i data-lucide="sparkles" size="22"></i>`;
+                lucide.createIcons();
+            }
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('result-text').innerText;
+            navigator.clipboard.writeText(text);
+            alert("Post copied to clipboard!");
+        }
+
+        function logout() {
+            user = { name: '', profession: '', bio: '' };
+            showPage('login');
+        }
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>
